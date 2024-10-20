@@ -1,0 +1,141 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column; /* Ensure the body content flows vertically */
+    height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Header */
+header {
+    position: relative; /* Use relative positioning */
+    margin-bottom: 20px; /* Space between header and navbar */
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #007bff;
+    margin: 0;  /* Remove extra margin */
+}
+
+/* Buttons */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Form */
+form {
+    position: absolute; /* Keep the form position absolute */
+    top: 20px;
+    right: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input[type="text"], form input[type="email"], form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Navbar Styles */
+nav {
+    margin-top: 20px; /* Space between header and navbar */
+}
+
+.navbar {
+    display: flex; /* Use flexbox for horizontal layout */
+    list-style: none; /* Remove bullet points */
+    padding: 10px 20px; /* Padding for navbar */
+    background-color: #007bff; /* Navbar background color */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar li {
+    margin: 0 15px; /* Spacing between menu items */
+}
+
+.navbar a {
+    text-decoration: none; /* Remove underline */
+    color: white; /* Text color */
+    font-weight: bold; /* Bold text */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+}
+
+.navbar a:hover {
+    color: #ffcc00; /* Change color on hover */
+}
+
+/* Footer */
+footer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background-color: transparent;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Additional styles for responsiveness */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+}

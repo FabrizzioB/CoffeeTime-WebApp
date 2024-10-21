@@ -30,7 +30,7 @@ def print_menu():
 if __name__ == '__main__':
     async def main():
         connection = await connect_to_db()
-        # await create_table(connection)  # Create the table in the DB server if not exists
+        await create_table(connection)  # Create the table in the DB server if not exists
 
         while True:
             print_menu()

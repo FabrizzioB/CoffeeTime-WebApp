@@ -3,10 +3,10 @@ import asyncmy  # An async MySQL driver for Python, commonly used with FastAPI.
 import sys
 
 # Environment Variables
-SSH_HOST = "192.168.22.2"  # IP address of the MySQL server
+SSH_HOST = "192.168.56.22"  # IP address of the MySQL server
 SSH_PORT = 22
-SSH_USER = "machinelearning"  # VM User
-SSH_PASSWORD = "teste123"
+SSH_USER = "vagrant"  # VM User
+SSH_PASSWORD = "vagrant"
 
 DB_HOST = "127.0.0.1"
 DB_PORT = 3306

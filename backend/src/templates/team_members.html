@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Time! - Team Members</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>Coffee Time!</h1>
+</header>
+
+<!-- Navbar -->
+<nav>
+    <ul class="navbar">
+        <li><a href="/">Home</a></li>
+        <li><a href="/add">Add Member</a></li>
+        <li><a href="/update">Update Coffee Count</a></li>
+        <li><a href="/delete">Delete Member</a></li>
+        <li><a href="/team">Team Members</a></li>
+        <li><a href="/sort">Sort member</a></li>
+    </ul>
+</nav>
+
+<main>
+    <section class="container">
+        <h1>Team members</h1>
+        <pre id="members-list">Loading team members...</pre>
+    </section>
+
+    <script>
+        fetch('/team-members')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data received:", data);
+                const membersList = document.getElementById('members-list');
+                if (data.team_members.length === 0) {
+                    membersList.textContent = "No team members found.";
+                } else {
+                    membersList.textContent = JSON.stringify(data.team_members, null, 2);
+                }
+            })
+            .catch(error => console.error('Error fetching team members:', error));
+    </script>
+</main>
+
+<footer>
+    <p>© 2024 Coffee Time. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

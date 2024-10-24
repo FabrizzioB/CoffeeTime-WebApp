@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Time! - Add Member</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1>Coffee Time!</h1>
+</header>
+
+<!-- Navbar -->
+<nav>
+    <ul class="navbar">
+        <li><a href="/">Home</a></li>
+        <li><a href="/add">Add Member</a></li>
+        <li><a href="/update">Update Coffee Count</a></li>
+        <li><a href="/delete">Delete Member</a></li>
+        <li><a href="/team">Team Members</a></li>
+        <li><a href="/sort">Sort member</a></li>
+    </ul>
+</nav>
+<main>
+    <h2>Add member</h2>
+
+    <form id="add-member-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required></br>
+        <label for="coffees">Coffees:</label>
+        <input type="text" id="coffees" name="coffees"></br>
+        <button type="submit">Add New Member</button>
+    </form>
+
+    <p id="response-message"></p>
+
+    <script>
+        document.getElementById('add-member-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const name = document.getElementById('name').value;
+            let coffees = document.getElementById('coffees').value || 0;
+
+            // Check if coffees is empty, set to 0 if it is
+            if (coffees === "") {
+                coffees = 0; // Default value if not provided
+            } else {
+                coffees = parseInt(coffees, 10); // Convert to integer if provided
+            }
+
+            fetch('/add', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, coffees: parseInt(coffees, 10) })
+            })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById('response-message').textContent = message;
+            })
+            .catch(error => console.error('Error adding member:', error));
+        });
+    </script>
+</main>
+<footer>
+    <p>© 2024 Coffee Time. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

@@ -1,18 +1,12 @@
 import asyncio  # A library to write concurrent code using async/await syntax. (Multiple connections)
-from coffee_database import *
+
+from backend.src.app import add_new_member
+from coffee import *
 
 """
 COFFEE TIME!
 -----------------------------------------------------------
-Aplicação que tem como objetivo:
-1. Criar a base de dados
-2. Criar o método de conexão à base de dados
-3. Criar os outros métodos de interação com a base de dados
-4. 
-5. Ser uma página web através de FastAPI e JS Framework
-6. Fazer a ligação à base de dados através de tunel SSH ao servidor da BD
-7. Ter uma base de dados própria para armazenar informação
-8. Criar consultas e escrita de informação na BD
+Console Application
 """
 
 
@@ -31,11 +25,10 @@ if __name__ == '__main__':
     async def main():
         connection = await connect_to_db()
         await create_table(connection)  # Create the table in the DB server if not exists
-
+        choice = None
         while True:
             print_menu()
             option = input("Please select an option: ")
-
             # Use a try-except block to handle potential input errors
             try:
                 option = int(option)
@@ -51,11 +44,11 @@ if __name__ == '__main__':
                 await show_team_members(connection)  # You might want to replace this with a specific method
             elif option == SORT_COFFEE_MEMBER:
                 # Show the member with the least coffee's -> Do you wish to add the coffee? Yes/No
-                name = await sort_coffee(connection)
+                name = await sort_least_coffees(connection)
                 if name:
                     choice = input(f"Do you wish to add coffee to {name}? (Y/n): ").strip().lower()
                 if choice in ['y', 'yes']:
-                    await add_coffee(connection, name)
+                    await add_one_coffee(connection, name)
                 elif choice in ['n', 'no']:
                     continue
                 else:
@@ -63,11 +56,11 @@ if __name__ == '__main__':
             elif option == ADD_COFFEE_MEMBER:
                 # Add coffee to a specific team member
                 name = input("Write the name of the member: ").strip()
-                await add_coffee(connection, name)
+                await add_new_member(connection, name)
             elif option == ADD_TEAM_MEMBER:
                 # Add coffee to a specific team member
                 name = input("Write the name of the new member: ").strip()
-                await add_member(connection, name)
+                await add_one_coffee(connection, name)
             elif option == EXIT:
                 # Close the connection and exit
                 await close_db_connection(connection)

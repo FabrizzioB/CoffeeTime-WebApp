@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Time! - Update coffee count</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin: 2px;
+        }
+
+        .delete-btn {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Team Coffee Tracker</h1>
+    <table id="members-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Coffees</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Members will be populated here dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Hidden form to update members -->
+    <div id="update-member-form" style="display: none;">
+        <h3>Update Member</h3>
+        <form id="update-form">
+            <input type="hidden" id="update-member-id">
+            <label for="update-name">Name:</label>
+            <input type="text" id="update-name">
+            <label for="update-coffees">Coffees:</label>
+            <input type="number" id="update-coffees">
+            <button type="submit" class="btn">Update Member</button>
+            <button type="button" class="btn" onclick="hideUpdateForm()">Cancel</button>
+        </form>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </main>
+  <footer>
+    <p>© 2024 Coffee Time. All rights reserved.</p>
+</footer>
+</body>
+</html>

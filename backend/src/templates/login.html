@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Coffee Time! - Login</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1 style="text-align: center;">Coffee Time!</h1>
+</header>
+<main>
+    <label for="uname"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" name="uname" required></br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="psw" required></br>
+    <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me </input>
+    </label>
+    </br><button type="submit">Login</button>
+    <span class="psw">Forgot <a href="#">password?</a></span>
+</main>
+
+<footer>
+    <p>© 2024 Coffee Time. All rights reserved.</p>
+</footer>
+</body>
+</html>

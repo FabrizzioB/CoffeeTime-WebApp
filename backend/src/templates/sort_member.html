@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sort Team Members</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Coffee Time!</h1>
+        <nav>
+            <ul class="navbar">
+                <li><a href="/">Home</a></li>
+                <li><a href="/add">Add Member</a></li>
+                <li><a href="/update">Update Coffee Count</a></li>
+                <li><a href="/delete">Delete Member</a></li>
+                <li><a href="/team">View Team Members</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Sort Team Members</h2>
+        <form id="sort-form">
+            <label for="sort-option">Choose sorting option:</label>
+            <select id="sort-option">
+                <option value="least">Sort by Least Coffees Paid</option>
+                <option value="most">Sort by Most Coffees Paid</option>
+            </select>
+            <button type="submit">Sort</button>
+        </form>
+
+        <h3>Sorted Team Members</h3>
+        <pre id="sorted-members">No sorted members yet.</pre>
+    </main>
+
+    <script>
+    document.getElementById('sort-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form submission
+        const sortOption = document.getElementById('sort-option').value;
+        const sortedMembers = document.getElementById('sorted-members');
+
+        // Clear previous results
+        sortedMembers.textContent = "Loading...";
+
+        // Determine the correct endpoint based on the selected option
+        let endpoint;
+
+        if (sortOption === 'least') {
+            endpoint = '/sort-least';
+        } else {
+            endpoint = '/sort-most';
+        }
+
+        fetch(endpoint, {
+            method: 'GET'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (sortOption === 'least') {
+                if (data.least_coffees_paid.length === 0) {
+                    sortedMembers.textContent = "No team members found.";
+                } else {
+                    sortedMembers.textContent = JSON.stringify(data.least_coffees_paid, null, 2);
+                }
+            } else {
+                if (data.most_coffees_paid.length === 0) {
+                    sortedMembers.textContent = "No team members found.";
+                } else {
+                    sortedMembers.textContent = JSON.stringify(data.most_coffees_paid, null, 2);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching sorted members:', error);
+            sortedMembers.textContent = "Error fetching sorted members.";
+        });
+    });
+</script>
+
+
+<footer>
+    <p>© 2024 Coffee Time. All rights reserved.</p>
+</footer>
+</body>
+</html>

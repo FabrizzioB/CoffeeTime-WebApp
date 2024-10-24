@@ -11,131 +11,83 @@ body {
     color: #333;
     line-height: 1.6;
     display: flex;
-    flex-direction: column; /* Ensure the body content flows vertically */
+    flex-direction: column;
     height: 100vh;
 }
 
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-    text-align: center;
-}
-
-/* Header */
+/* Header Styles */
 header {
-    position: relative; /* Use relative positioning */
-    margin-bottom: 20px; /* Space between header and navbar */
+    position: relative;
+    margin-bottom: 10px; /* Space between header and navbar */
+    padding: 20px 0; /* Top and bottom padding */
+    text-align: left; /* Align text to the left */
 }
 
 header h1 {
     font-size: 2.5rem;
     color: #007bff;
-    margin: 0;  /* Remove extra margin */
-}
-
-/* Buttons */
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1.2rem;
-    margin-top: 20px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Form */
-form {
-    position: absolute; /* Keep the form position absolute */
-    top: 20px;
-    right: 20px;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-form input[type="text"], form input[type="email"], form input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-form button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-form button:hover {
-    background-color: #0056b3;
+    margin: 0;
 }
 
 /* Navbar Styles */
 nav {
-    margin-top: 20px; /* Space between header and navbar */
+    width: 100%; /* Full width navigation */
+    padding: 10px 0; /* Add vertical padding */
+    background-color: #007bff;
 }
 
 .navbar {
+    list-style: none;
     display: flex; /* Use flexbox for horizontal layout */
-    list-style: none; /* Remove bullet points */
-    padding: 10px 20px; /* Padding for navbar */
-    background-color: #007bff; /* Navbar background color */
-    border-radius: 5px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    justify-content: flex-start; /* Align items to the left */
+    padding: 0 20px; /* Add some horizontal padding to the navbar */
 }
 
 .navbar li {
-    margin: 0 15px; /* Spacing between menu items */
+    margin: 0 15px; /* Space between nav items */
 }
 
 .navbar a {
-    text-decoration: none; /* Remove underline */
-    color: white; /* Text color */
-    font-weight: bold; /* Bold text */
-    transition: color 0.3s ease; /* Smooth color transition on hover */
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 .navbar a:hover {
-    color: #ffcc00; /* Change color on hover */
+    color: #ffcc00;
 }
 
-/* Footer */
+/* Main content styling */
+main {
+    flex: 1; /* Allow main to grow and fill the available space */
+    padding: 20px; /* Padding for the main content */
+}
+
+.container {
+    max-width: 800px; /* Adjust max width for better readability */
+    margin: 0 auto; /* Center the container */
+}
+
+/* Preformatted text styling */
+pre {
+    max-width: 100%; /* Full width */
+    max-height: 300px; /* Restrict the height */
+    overflow: auto; /* Scroll if content overflows */
+    margin: 10px 0; /* Center the element with some spacing */
+    white-space: pre-wrap; /* Line breaks within text */
+    font-size: 0.8rem; /* Smaller font size for the preformatted text */
+    padding: 10px; /* Add some padding for better spacing */
+    background-color: #f8f9fa; /* Light background for better readability */
+    border: 1px solid #ddd; /* Light border for better separation */
+    border-radius: 5px; /* Slightly rounded corners */
+}
+
+/* Footer styling */
 footer {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    background-color: transparent;
     text-align: center;
     padding: 10px 0;
     font-size: 0.9rem;
     color: #666;
-}
-
-/* Additional styles for responsiveness */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 2rem;
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 1rem;
-    }
+    background-color: #f4f4f4; /* Same as body for continuity */
 }

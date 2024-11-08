@@ -1,3 +1,4 @@
+aiomysql==0.2.0
 annotated-types==0.7.0
 anyio==4.6.2.post1
 argon2-cffi==23.1.0
@@ -64,6 +65,7 @@ pydantic==2.9.2
 pydantic_core==2.23.4
 Pygments==2.18.0
 PyJWT==2.8.0
+PyMySQL==1.1.1
 pyproject_hooks==1.0.0
 pyrsistent==0.19.3
 python-dotenv==1.0.1

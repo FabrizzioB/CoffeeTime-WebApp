@@ -1,6 +1,5 @@
 import uvicorn
 import json
-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -63,35 +62,39 @@ async def sort_member_page(request: Request):
 # Lifespan event for managing database connection
 @app.on_event("startup")
 async def startup():
-    global connection
+    """    global connection
     connection = await connect_to_db()  # Establish DB connection when app starts
     if connection is None:
         print("Failed to establish database connection.")
     else:
         print("Database connection established!")
+    """
+    await create_db_pool()  # Initialize the database pool at app startup
+
 
 @app.on_event("shutdown")
 async def shutdown():
+    """
     global connection
     if connection:
         await connection.close()  # Cleanly close the DB connection
         print("Database connection closed.")
+    """
+    await close_db_pool()
+
 
 # Insert new member
 @app.put("/add")
 async def add_new_member(member: Member):
-    global connection
-    await insert_member(connection, member.name, member.coffees)
+    # global connection
+    await insert_member(member.name, member.coffees)
     return PlainTextResponse(content=f"New member was added: {member.name} with {member.coffees} coffees.")
 
 # Delete team member
 @app.delete("/delete/{name}")
 async def remove_member(name: str):
-    global connection
-    if connection is None:
-        return PlainTextResponse(content="Error: No database connection.", status_code=500)
+    success = await delete_member(name)
 
-    success = await delete_member(connection, name)
     if success:
         return PlainTextResponse(content=f"Member {name} was deleted successfully.")
     else:
@@ -100,25 +103,20 @@ async def remove_member(name: str):
 # Increment the coffee count for a team member
 @app.put("/add-coffee")
 async def increment_one_coffee(member: Member):
-    global connection
-    if connection is None:
-        return PlainTextResponse(content="Error: No database connection.", status_code=500)
-    await add_one_coffee(connection, member.name)
+    await add_one_coffee(member.name)
     return PlainTextResponse(content=f"Coffee count incremented for {member.name}.")
 
 # Increment the coffee count for a team member by a specific number
 @app.put("/add-coffee/{name}/{number}")
 async def increment_coffees(name: str, number: int):
-    global connection
-    if connection is None:
-        return PlainTextResponse(content="Error: No database connection.", status_code=500)
     try:
-        member_exists = await check_member_exists(connection, name)
+        member_exists = await check_member_exists(name)
+
         if not member_exists:
             return PlainTextResponse(content=f"Error: Member {name} not found.", status_code=404)
         if number < 0:
             return PlainTextResponse(content="Error: Coffee count cannot be negative.", status_code=400)
-        await add_multiple_coffees(connection, name, number)
+        await add_multiple_coffees(name, number)
         return PlainTextResponse(content=f"Coffee count incremented by {number} for {name}.")
     except Exception as e:
         return PlainTextResponse(content=f"Error updating coffee count: {str(e)}", status_code=500)
@@ -126,42 +124,37 @@ async def increment_coffees(name: str, number: int):
 # Reset the coffee count for a team member
 @app.put("/remove-coffee")
 async def remove_coffees(member: Member):
-    global connection
-    if connection is None:
-        return PlainTextResponse(content="Error: No database connection.", status_code=500)
-    await remove_coffee(connection, member.name)
+    await remove_coffee(member.name)
     return PlainTextResponse(content=f"Coffee count reset for {member.name}.")
 
 # Showcase all team members
 @app.get("/team-members-names")
 async def team_members_names(request: Request):
-    global connection
-    team_members_name = await show_team_members_names(connection)
+    team_members_name = await show_team_members_names()
     team_members_str = json.dumps({"team_members": team_members_name}, indent=2)
     return PlainTextResponse(content=team_members_str)
 
 # Showcase all team members and their coffee counts
 @app.get("/team-members", response_model=list[Member])
 async def team_members(request: Request):
-    global connection
-    team_member = await show_team_members(connection)
+    team_member = await show_team_members()
     return JSONResponse(content={"team_members": team_member})
 
 # Sort the member with the least coffee's paid
 @app.get("/sort-least")
 async def sort_least_coffee_payer(request: Request):
-    global connection
-    sorted_name = await sort_least_coffees(connection)
+    sorted_name = await sort_least_coffees()
     sort_least_coffee_str = json.dumps({"least_coffees_paid": sorted_name}, indent=2)
     return PlainTextResponse(content=sort_least_coffee_str)
 
 # Sort the member with the most coffee's paid
 @app.get("/sort-most")
 async def sort_most_coffee_payer(request: Request):
-    global connection
-    sorted_name = await sort_most_coffees(connection)
+    sorted_name = await sort_most_coffees()
     sort_most_coffee_str = json.dumps({"most_coffees_paid": sorted_name}, indent=2)
     return PlainTextResponse(content=sort_most_coffee_str)
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+

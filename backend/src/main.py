@@ -1,14 +1,6 @@
 import asyncio  # A library to write concurrent code using async/await syntax. (Multiple connections)
-
 from backend.src.app import add_new_member
 from coffee import *
-
-"""
-COFFEE TIME!
------------------------------------------------------------
-Console Application
-"""
-
 
 def print_menu():
     print("")

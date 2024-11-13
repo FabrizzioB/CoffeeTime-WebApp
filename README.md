@@ -9,17 +9,19 @@ The project manages a list of team members and tracks the number of times each m
 
 ### Web Interface
 
-1. Home and Login Page (/): Displays the login page for initial user access.
-2. Single Page Application (SPA) Page (/index): Serves the main interface for the team management functionality. 
-3. Add Member Page (/add): Provides a form for adding a new team member. 
-4. Update Coffee Count Page (/update): Allows users to update the coffee count for an existing member. 
-5. Delete Member Page (/delete): Lets users remove a team member from the database. 
-6. View Team Members (/team): Displays all team members and their coffee counts. 
-7. Sort Members (/sort): Shows options to sort members based on coffee purchases.
+1. Login Page (/): Displays the login page for initial user access.
+2. Add Member Page (/add): Provides a form for adding a new team member. 
+3. Update Coffee Count Page (/update): Allows users to update the coffee count for an existing member. 
+4. Delete Member Page (/delete): Lets users remove a team member from the database. 
+5. View Team Members (/team): Displays all team members and their coffee counts. 
+6. Sort Members (/sort): Shows options to sort members based on coffee purchases.
+7. Single Page Application (SPA) Page (/index): Serves the main interface for the team management functionality.
+8. Register (/register): Page to register the user for the app.
+9. Password recovery (/recovery): Page to recover the account / password reset.
 
 ### API Endpoints
 
-Member Management
+#### Member Management
 
 - PUT /add: Adds a new team member to the database with an initial coffee count.
 - DELETE /delete/{name}: Removes a specified member from the database by name.
@@ -28,7 +30,7 @@ Member Management
 - PUT /add-coffee/{name}/{number}: Increments a specified member’s coffee count by a given number, validating that the number is non-negative.
 - PUT /remove-coffee: Resets the coffee count for a specified member to zero.
 
-Data Retrieval
+#### Data Retrieval
 
 - GET /team-members-names: Returns a list of team member names in alphabetical order.
 - GET /team-members: Retrieves all team members along with their coffee counts as JSON.
@@ -44,9 +46,14 @@ Data Retrieval
 
 ### Sorting and Filtering
 
-Sorting functions (sort_least_coffees and sort_most_coffees) identify team members who have paid for the fewest and most coffees, respectively. The results are alphabetically ordered when counts are the same. 
+- Sorting functions (sort_least_coffees and sort_most_coffees) identify team members who have paid for the fewest and most coffees, respectively. The results are alphabetically ordered when counts are the same. 
 
 ### Startup and Shutdown
 
-The app opens a connection to the database on startup and closes it gracefully on shutdown, ensuring resource management and connection stability.
+- The app opens a connection to the database on startup and closes it gracefully on shutdown, ensuring resource management and connection stability.
 
+### To do list
+
+- Login, register and recovery to finish.
+- Only logged in users can use the app.
+- Users logged in can use all the functionalities of the app.

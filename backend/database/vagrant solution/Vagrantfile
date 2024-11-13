@@ -4,7 +4,7 @@ Vagrant.configure("2") do |config|
     mysql_server.vm.box = "bento/ubuntu-22.04"
 
     # NETWORKING CONFIGURATION
-    mysql_server.vm.network "forwarded_port", guest: 80, host: 8080  # http
+    mysql_server.vm.network "forwarded_port", guest: 80, host: 8082  # http
     mysql_server.vm.network "forwarded_port", guest: 3306, host: 3369  # mysql
     mysql_server.vm.network "private_network", type: "static", ip: "192.168.58.23"
 

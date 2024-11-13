@@ -5,11 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coffee Time! - Team Members</title>
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2; /* Color for header */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Zebra striping for rows */
+        }
+        tr:hover {
+            background-color: #e9e9e9; /* Hover effect for rows */
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <h1 style="text-align: center;">Coffee Time!</h1>
+    <h1 style="text-align: center;"><a href="/">Coffee Time!</a></h1>
     <!-- Navbar -->
     <nav>
         <ul class="navbar">
@@ -18,16 +39,26 @@
             <li><a href="/update">Update Coffee Count</a></li>
             <li><a href="/delete">Delete Member</a></li>
             <li><a href="/team">View Team Members</a></li>
-            <li><a href="/sort">Sort member</a></li>
+            <li><a href="/sort">Sort Member</a></li>
         </ul>
     </nav>
 </header>
 
-
 <main>
     <section class="container">
-        <h1>Team members</h1>
-        <pre id="members-list">Loading team members...</pre>
+        <h1>Team Members</h1>
+        <table id="members-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Times Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="3">Loading team members...</td></tr>
+            </tbody>
+        </table>
     </section>
 
     <script>
@@ -40,11 +71,27 @@
             })
             .then(data => {
                 console.log("Data received:", data);
-                const membersList = document.getElementById('members-list');
+                const membersTableBody = document.querySelector('#members-table tbody');
+                membersTableBody.innerHTML = ''; // Clear loading message
+
                 if (data.team_members.length === 0) {
-                    membersList.textContent = "No team members found.";
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3">No team members found.</td>`;
+                    membersTableBody.appendChild(row);
                 } else {
-                    membersList.textContent = JSON.stringify(data.team_members, null, 2);
+                    // Sort members by ID
+                    data.team_members.sort((a, b) => a.id - b.id);  // Sorting by member.id
+
+                    // Create a row for each member after sorting
+                    data.team_members.forEach(member => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${member.id}</td>
+                            <td>${member.name}</td>
+                            <td>${member.times_paid}</td>
+                        `;
+                        membersTableBody.appendChild(row);
+                    });
                 }
             })
             .catch(error => console.error('Error fetching team members:', error));

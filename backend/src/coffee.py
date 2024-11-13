@@ -1,27 +1,12 @@
-import asyncssh     # A library to create an SSH tunnel for secure database connections.
+"""Methods to access the database"""
+
+from tabnanny import check
+
 import asyncmy      # An async MySQL driver for Python, commonly used with FastAPI.
 import sys
 import aiomysql     # Connection pooling creation
 
-# Environment Variables
-SSH_HOST = "192.168.58.23"  # IP address of the MySQL server
-SSH_PORT = 22
-SSH_USER = "vagrant"
-SSH_PASSWORD = "vagrant"
-
-DB_HOST = "127.0.0.1"
-DB_PORT = 3306
-DB_USER = "coffee_user"
-DB_PASSWORD = "coffeeaddict"
-DB_NAME = "coffee_db"
-
-# Constants for menu options
-SHOW_TEAM_MEMBERS_NAMES = 1
-SHOW_MEMBERS_COFFEE = 2
-SORT_COFFEE_MEMBER = 3
-ADD_COFFEE_MEMBER = 4
-ADD_TEAM_MEMBER = 5
-EXIT = 6
+from config import *
 
 pool = None # Variable to initiate the pool of requests
 
@@ -30,14 +15,6 @@ async def create_db_pool():
     global pool
 
     try:
-        # Create the async ssh connection to the server.
-        ssh_conn = await asyncssh.connect(
-            SSH_HOST, port=SSH_PORT, username=SSH_USER, password=SSH_PASSWORD
-        )
-
-        # From the server create the async connection to the DB.
-        await ssh_conn.forward_local_port(DB_HOST, DB_PORT, DB_HOST, DB_PORT)
-
         # Connect to MySQL database
         pool = await aiomysql.create_pool(
             host=DB_HOST,  # This points to the local machine after the tunnel
@@ -51,11 +28,8 @@ async def create_db_pool():
         )
 
         if pool:
+            print("Database pool connection created successfully.")
             return pool  # Return the connection for further use
-
-    except asyncssh.Error as ssh_error:
-        print(f"SSH Error: {ssh_error}")
-        return None  # Return None if the SSH connection fails
 
     except aiomysql.MySQLError as db_error:
         print(f"MySQL Error: {db_error}")
@@ -94,10 +68,32 @@ async def create_table(connection):
         print(f"Error creating table: {e}")
         sys.exit(1)
 
+
+async def close_db_connection(connection):
+    """Close the database connection gracefully."""
+
+    if connection is None:
+        print("No database connection established, can't close what is not opened!")
+        return
+    elif connection:
+        connection.close()
+        print("Database connection closed.")
+        return
+
+
+async def check_member_exists(name: str) -> bool:
+    """Check if a member exists in the database by their name."""
+    global pool
+    check_member_exists_query = "SELECT COUNT(*) FROM team_members WHERE name = %s;"
+    async with pool.acquire() as connection:
+        async with connection.cursor() as cursor:
+            await cursor.execute(check_member_exists_query, (name,))
+            result = await cursor.fetchone()
+            return result[0] > 0  # Return True if the member exists, else False
+
 async def insert_member(name: str, times_paid: int):
     """Insert a new team member into the database."""
     global pool
-
     if pool is None:
         print("Database connection pool not initialized.")
         return
@@ -106,10 +102,43 @@ async def insert_member(name: str, times_paid: int):
 
     async with pool.acquire() as conn:
         async with conn.cursor() as cursor:
+            # Check if the member exists
+            if await check_member_exists(name):
+                print(f"Member '{name}' already exists.")
+                return
+
+            # Insert new member if it does not exist
             await cursor.execute(insert_query, (name, times_paid))
             await conn.commit()
             print(f"Inserted member {name} with {times_paid} coffees.")
 
+async def update_coffee(name: str, number: int):
+    """Increment a new coffee from a member into the database."""
+    global pool
+
+    if pool is None:
+        print("No database connection established.")
+        return False  # Return false indicating failure
+
+    # Check if the member exists
+    if await check_member_exists(name):
+        # Check if the number is a positive integer
+        if number < 0:
+            print("Number of coffees to add cannot be negative.")
+            return False  # Return false for invalid input
+
+        insert_query = "UPDATE team_members SET times_paid = (%s) WHERE name = (%s);"
+
+        try:
+            async with pool.acquire() as connection:
+                async with connection.cursor() as cursor:
+                    await cursor.execute(insert_query, (number, name,))
+                    await connection.commit()
+                    print(f"Updated {number} coffees for {name}.")
+                    return True  # Return true indicating success
+        except Exception as e:
+            print(f"Some error occurred while updating the coffees for {name}: {str(e)}")
+            return False  # Return false indicating failure
 
 async def delete_member(name):
     """Delete a team member from the database."""
@@ -119,20 +148,21 @@ async def delete_member(name):
         print("Database connection pool not initialized.")
         return False  # Return False to indicate failure
 
-    delete_query = "DELETE FROM team_members WHERE name = (%s);"
+    if await check_member_exists(name):
+        delete_query = "DELETE FROM team_members WHERE name = (%s);"
 
-    async with pool.acquire() as connection:
-        async with connection.cursor() as cursor:
-            await cursor.execute(delete_query, (name,))
-            # Check how many rows were deleted
-            if connection.rowcount > 0:
-                print(f"Deleted member: {name}")
-                return True  # Return True to indicate success
-            else:
-                print(f"No member found with name: {name}")
-                return False  # Return False to indicate that no deletion occurred
+        async with pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                await cursor.execute(delete_query, (name,))
+                # Check how many rows were deleted
+                if connection.rowcount > 0:
+                    print(f"Deleted member: {name}")
+                    return True  # Return True to indicate success
+                else:
+                    print(f"No member found with name: {name}")
+                    return False  # Return False to indicate that no deletion occurred
 
-async def delete_team():
+async def delete_entire_team():
     """Delete a team member from the database."""
     global pool
 
@@ -153,50 +183,6 @@ async def delete_team():
             else:
                 print(f"No members are present on the team.")
                 return False  # Return False to indicate that no deletion occurred
-
-async def add_one_coffee(name):
-    """Increment a new coffee from a member into the database."""
-    global pool
-
-    if pool is None:
-        print("No database connection established.")
-        return
-
-    insert_query = "UPDATE team_members SET times_paid = times_paid + 1 WHERE name = (%s);"
-
-    async with pool.acquire() as connection:
-        async with connection.cursor() as cursor:
-            await cursor.execute(insert_query, (name,))
-            await connection.commit()
-            print(f"Updated times_paid for {name}.")
-
-
-async def add_multiple_coffees(name: str, number: int):
-    """Increment a new coffee from a member into the database."""
-    global pool
-    if pool is None:
-        print("No database connection established.")
-        return False  # Return false indicating failure
-
-    # Check if the number is a positive integer
-    if number < 0:
-        print("Number of coffees to add cannot be negative.")
-        return False  # Return false for invalid input
-
-    insert_query = "UPDATE team_members SET times_paid = times_paid + (%s) WHERE name = (%s);"
-
-    try:
-        async with pool.acquire() as connection:
-            async with connection.cursor() as cursor:
-                await cursor.execute(insert_query, (number, name,))
-                await connection.commit()
-                print(f"Updated {number} coffees for {name}.")
-                return True  # Return true indicating success
-
-    except Exception as e:
-        print(f"Error updating coffees for {name}: {str(e)}")
-        return False  # Return false indicating failure
-
 
 async def remove_coffee(name: str):
     """Remove the coffee count from a specific member in the database."""
@@ -274,7 +260,7 @@ async def sort_least_coffees():
     select_query = """
         SELECT name 
         FROM team_members 
-        ORDER BY times_paid ASC, name ASC 
+        ORDER BY times_paid ASC, id ASC 
         LIMIT 1;
         """
 
@@ -316,26 +302,3 @@ async def sort_most_coffees():
             else:
                 print("No members found.")
                 return None
-
-async def check_member_exists(name: str) -> bool:
-    """Check if a member exists in the database by their name."""
-    global pool
-
-    check_member_exists_query = "SELECT COUNT(*) FROM team_members WHERE name = %s;"
-
-    async with pool.acquire() as connection:
-        async with connection.cursor() as cursor:
-            await cursor.execute(check_member_exists_query, (name,))
-            result = await cursor.fetchone()
-            return result[0] > 0  # Return True if the member exists, else False
-
-async def close_db_connection(connection):
-    """Close the database connection gracefully."""
-
-    if connection is None:
-        print("No database connection established, can't close what is not opened!")
-        return
-    elif connection:
-        connection.close()
-        print("Database connection closed.")
-        return

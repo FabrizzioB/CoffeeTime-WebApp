@@ -15,7 +15,7 @@ def print_menu():
 
 if __name__ == '__main__':
     async def main():
-        connection = await connect_to_db()
+        connection = await create_db_pool()
         await create_table(connection)  # Create the table in the DB server if not exists
         choice = None
         while True:

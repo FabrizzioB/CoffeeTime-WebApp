@@ -1,7 +1,7 @@
 """Testing the connection to the Docker container"""
 import pymysql
 
-from config import *
+from backend.src.app.utils.config import *
 
 try:
     connection = pymysql.connect(

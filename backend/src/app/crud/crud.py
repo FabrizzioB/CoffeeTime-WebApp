@@ -1,14 +1,19 @@
 """Methods to access the database"""
 
-from tabnanny import check
-
-import asyncmy      # An async MySQL driver for Python, commonly used with FastAPI.
 import sys
+import asyncmy      # An async MySQL driver for Python, commonly used with FastAPI
 import aiomysql     # Connection pooling creation
 
-from config import *
+from backend.src.app.utils.config import *
+from backend.src.app.db.connection import pool
 
 pool = None # Variable to initiate the pool of requests
+
+async def insert_member(name: str, coffees: int):
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("INSERT INTO team_members (name, coffees) VALUES (%s, %s)", (name, coffees))
+            await conn.commit()
 
 async def create_db_pool():
     """Establish the connection to the MySQL DB Server via the SSH Tunnel."""

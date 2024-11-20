@@ -54,6 +54,12 @@ The project manages a list of team members and tracks the number of times each m
 
 ### To do list
 
+- In View Team Members view should be a button to delete/remove the user.
 - Login, register and recovery to finish.
 - Only logged in users can use the app.
-- Users logged in can use all the functionalities of the app.
+- Only users logged in can use all the functionalities of the app.
+- Mockups.
+- Front-end in React.
+- Convert the application to Docker container and deploy.
+- Create a monitoring Server to monitor the application in Python.
+- Set this on a webserver like Apache.

@@ -7,6 +7,7 @@ from backend.src.app.crud.crud import *
 
 router = APIRouter()
 
+
 # Insert new member
 @router.put("/add")
 async def add_new_member(member: Member):

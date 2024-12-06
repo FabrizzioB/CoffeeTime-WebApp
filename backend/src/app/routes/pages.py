@@ -10,6 +10,11 @@ templates = Jinja2Templates(directory="app/templates")
 async def root(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+# Route to view sort member
+@router.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
 # Route for SPA page
 @router.get("/index", response_class=HTMLResponse)
 async def index(request: Request):
@@ -40,12 +45,3 @@ async def team_members_page(request: Request):
 async def sort_member_page(request: Request):
     return templates.TemplateResponse("sort_member.html", {"request": request})
 
-# Route to view sort member
-@router.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-# Route to view sort member
-@router.get("/register", response_class=HTMLResponse)
-async def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})

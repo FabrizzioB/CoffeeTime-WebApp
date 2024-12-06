@@ -2,24 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width" />
-    <title>Coffee Time! - Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Coffee Time</title>
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .success {
+            color: green;
+            font-size: 1em;
+            margin-top: 15px;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .username-availability {
+            font-size: 0.9em;
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1 style="text-align: center;">Register</h1>
-</header>
+    <header>
+        <h1 style="text-align: center;"><a href="/">Coffee Time!</a></h1>
+    </header>
 
-<main>
-Name: </br>
-E-mail: </br>
-Password:</br>
-</main>
+    <h3 style="text-align: center;">Create a new account</h3>
 
-<footer>
-    <p>© 2024 Coffee Time. All rights reserved.</p>
-</footer>
+    <div class="form-container">
+        <form action="/register" method="post" id="register-form" onsubmit="return validateForm(event)">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required>
+            <div id="username-error" class="error"></div>
+            <div id="username-availability" class="username-availability"></div> <!-- Added for availability feedback -->
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+            <div id="password-error" class="error"></div>
+
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            <div id="confirm-password-error" class="error"></div>
+
+            <button type="submit">Register</button>
+
+            <div id="success-message" class="success"></div>
+        </form>
+    </div>
+
+    <div class="form-footer">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+
+    <script>
+        // Client-side validation for the form
+        async function validateForm(event) {
+            // Reset error messages
+            document.getElementById("username-error").innerText = '';
+            document.getElementById("password-error").innerText = '';
+            document.getElementById("confirm-password-error").innerText = '';
+            document.getElementById("success-message").innerText = '';
+
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirm-password").value;
+
+            let valid = true;
+
+            // Validate password complexity (e.g., at least 8 characters)
+            let passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+            if (!passwordPattern.test(password)) {
+                document.getElementById("password-error").innerText = 'Password must be at least 8 characters long, with one letter, one number, and one special character.';
+                valid = false;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                document.getElementById("confirm-password-error").innerText = 'Passwords do not match.';
+                valid = false;
+            }
+
+            // Validate username availability on submit (as opposed to on input)
+            const usernameAvailable = await checkUsernameAvailability(username);
+            if (!usernameAvailable) {
+                document.getElementById("username-availability").innerText = 'Username is already taken';
+                document.getElementById("username-availability").style.color = 'red';
+                valid = false;
+            } else {
+                document.getElementById("username-availability").innerText = 'Username is available';
+                document.getElementById("username-availability").style.color = 'green';
+            }
+
+            if (!valid) {
+                // Prevent form submission if there is any validation error
+                event.preventDefault();
+            }
+        }
+
+        // Function to check username availability
+        async function checkUsernameAvailability(username) {
+            if (username.length === 0) return false; // Prevent empty username checks
+            const response = await fetch(`/check-username?username=${username}`);
+            const data = await response.json();
+            return data.available;
+        }
+    </script>
+
 </body>
 </html>

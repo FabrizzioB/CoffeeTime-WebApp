@@ -1,44 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width" />
-    <title>Coffee Time! - Login</title>
-    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width" />
+        <title>Coffee Time! - Login</title>
+        <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    </head>
 
-<header>
-    <h1 style="text-align: center;"><a href="/">Coffee Time!</a></h1>
-    <!-- Navbar -->
-    <nav>
-        <ul class="navbar">
-            <li><a href="/">Home</a></li>
-            <li><a href="/add">Add Member</a></li>
-            <li><a href="/update">Update Coffee Count</a></li>
-            <li><a href="/delete">Delete Member</a></li>
-            <li><a href="/team">View Team Members</a></li>
-            <li><a href="/sort">Sort Member</a></li>
-        </ul>
-    </nav>
-</header>
+    <body>
 
+    <header>
+        <h1 style="text-align: center;"><a href="/">Coffee Time!</a></h1>
+    </header>
 
+    <h3 style="text-align:center;">You must be logged in to use the application!</h3>
 
-<main style="text-align: center;">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required></br>
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required></br>
-    <label>
-        <input type="checkbox" checked="checked" name="remember"> Remember me </input>
-    </label>
-    </br><button type="submit">Login</button></br>
-    <span class="psw">Forgot <a href="#">password?</a></span>
-</main>
-
-<footer>
-    <p>© 2024 Coffee Time. All rights reserved.</p>
-</footer>
-</body>
-</html>
+    <main style="text-align: center;">
+        <!-- Login Form -->
+        <form action="/login" method="POST" id="loginForm">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="username" id="uname" required><br>
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" id="psw" required><br>
+            <label>
+                <input type="checkbox" checked="checked" name="remember">Remember me</input>
+            </label><br>
+            <button type="submit">Login</button><br>
+            <span class="psw">Forgot <a href="#">password?</a></span>
+        </form>
+        <h3>Don't have an account? Please <a href="/register">register</a></h3>
+    </main>
+    <footer>
+        <p>© 2024 Coffee Time. All rights reserved.</p>
+    </footer>
+    </body>
+    </html>

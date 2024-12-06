@@ -1,11 +1,100 @@
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, JSONResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import RedirectResponse
 
-from backend.src.app.models.member import Member
+from backend.src.app.auth import create_access_token, verify_token
 from backend.src.app.crud.crud import *
+from backend.src.app.models.member import Member
+from backend.src.app.models.user import User
 
 router = APIRouter()
+
+# Set up OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+@router.post("/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Authenticate user and return an access token.
+    """
+    username = form_data.username
+    password = form_data.password
+
+    # Verify the user's credentials
+    if await verify_user(username, password):
+        # Generate the JWT token
+        access_token = create_access_token(data={"sub": username})
+        response = RedirectResponse(url="/index", status_code=302)
+        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+        return response
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+# User registration
+@router.post("/register")
+async def register(user_data: User):
+# """Register user in the database."""
+    """
+        Register a new user.
+    """
+    username = user_data.username
+    password = user_data.password
+
+    # Check if the username already exists
+    if await check_username_exists(username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists"
+        )
+
+    # Create the user if doesn't exist
+    if await create_user_in_db(username, password):
+        return {"message": "User created successfully!"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating user"
+        )
+
+
+# Method to check if user exists
+async def check_username_exists(username: str) -> bool:
+    pool = get_db_pool()
+    query = "SELECT COUNT(*) FROM users WHERE username = %s;"
+
+    async with pool.acquire() as connection:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (username,))
+            result = await cursor.fetchone()
+            return result[0] > 0  # Returns True if user exists
+
+
+# Method to create user in the database
+async def create_user_in_db(username: str, password: str) -> bool:
+    pool = get_db_pool()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    insert_user_query = """
+        INSERT INTO users (username, password_hash) 
+        VALUES (%s, %s);
+    """
+
+    async with pool.acquire() as connection:
+        async with connection.cursor() as cursor:
+            try:
+                await cursor.execute(insert_user_query, (username, hashed_password))
+                await connection.commit()
+                return True
+            except Exception as e:
+                print(f"Error creating user: {e}")
+                return False
+
 
 
 # Insert new member
